@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularCore", "ModularCore.csproj", "{69A4494E-6B9D-49A4-8976-ABAB9968CEF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDemo", "..\ClassDemo\ClassDemo.csproj", "{22F0DAFA-002B-4A7C-85AF-A9CAFC92FDDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69A4494E-6B9D-49A4-8976-ABAB9968CEF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A4494E-6B9D-49A4-8976-ABAB9968CEF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A4494E-6B9D-49A4-8976-ABAB9968CEF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A4494E-6B9D-49A4-8976-ABAB9968CEF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22F0DAFA-002B-4A7C-85AF-A9CAFC92FDDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22F0DAFA-002B-4A7C-85AF-A9CAFC92FDDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22F0DAFA-002B-4A7C-85AF-A9CAFC92FDDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F0DAFA-002B-4A7C-85AF-A9CAFC92FDDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {22EEFEDA-FE93-4E5E-9B92-68742127D03D}
+	EndGlobalSection
+EndGlobal

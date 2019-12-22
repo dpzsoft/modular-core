@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>1.0.1912.2</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dpz3.Modular" Version="1.0.1912.4" />
+  </ItemGroup>
+
+</Project>
