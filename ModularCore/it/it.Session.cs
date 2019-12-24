@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 /// </summary>
 public static partial class it {
 
-    public class Session : dpz3.ssr.SessionClient, dpz3.AspNetCore.ISessionManager {
+    public class Session : dpz3.ssr.SessionClient, dpz3.Modular.ISessionManager {
 
         public const string S_EcpSessionId = "ycc_session_id";
         public const string S_EcpUserId = "ycc_user_id";
