@@ -28,7 +28,7 @@ public static partial class it {
         /// <summary>
         /// 获取是否有效
         /// </summary>
-        public bool Enabled { get; private set; }
+        public bool Enable { get; private set; }
 
         public Session(string sid = "", bool create = false) : base(it.Config.Ess.IPAddress, it.Config.Ess.Port, it.Config.Ess.Password) {
             if (create) {
@@ -37,13 +37,14 @@ public static partial class it {
                 } else {
                     base.CreateNewSessionID();
                 }
-                this.Enabled = true;
+                this.Enable = true;
             } else {
                 if (sid != "") {
-                    this.Enabled = base.SetSessionID(sid);
+                    this.Enable = base.SetSessionID(sid);
                     //if (!base.SetSessionID(sid)) throw new Exception("交互信息无效或已过期");
                 }
             }
+            Console.WriteLine($"[*] 创建一个全新的交互管理器 sid:{this.SessionID} 有效性:{this.Enable}");
         }
 
         /// <summary>
@@ -64,6 +65,16 @@ public static partial class it {
         public void SetValue(string key, string value) {
             //throw new NotImplementedException();
             this[key] = value;
+        }
+
+        /// <summary>
+        /// 创建新的交互标识
+        /// </summary>
+        /// <returns></returns>
+        public string CreateSessionId() {
+            Console.WriteLine($"[+] 创建一个全新的交互标识 ...");
+            this.CreateNewSessionID();
+            return this.SessionID;
         }
     }
 

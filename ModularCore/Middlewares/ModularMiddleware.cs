@@ -287,6 +287,8 @@ namespace ModularCore.Middlewares {
         // 执行接口
         private Task ExecuteMethod(HttpContext httpContext, ModularMethodInfo info) {
             try {
+                // 设置字符编码
+                httpContext.Response.ContentType = "text/plain;charset=UTF-8";
                 // 建立宿主对象
                 using (ModularHost host = new ModularHost()) {
                     host.Context = httpContext;
@@ -299,14 +301,14 @@ namespace ModularCore.Middlewares {
                                 JttpSessionControllerBase api = (JttpSessionControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
-                                using (it.Session session = new it.Session(api.SessionID)) {
+                                using (var session = new it.Session(api.SessionID)) {
                                     host.Session = session;
                                     if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);
+                                    // 调用主事件
+                                    res = (string)info.Method.Invoke(api, null);
+                                    dpz3.Modular.Result.Text text = new dpz3.Modular.Result.Text() { Content = res };
+                                    return api.Render(text);
                                 }
-                                // 调用主事件
-                                res = (string)info.Method.Invoke(api, null);
-                                dpz3.Modular.Result.Text text = new dpz3.Modular.Result.Text() { Content = res };
-                                return api.Render(text);
                             } else {
                                 ApiControllerBase api = (ApiControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
@@ -323,13 +325,13 @@ namespace ModularCore.Middlewares {
                                 JttpSessionControllerBase api = (JttpSessionControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
-                                using (it.Session session = new it.Session(api.SessionID)) {
+                                using (var session = new it.Session(api.SessionID)) {
                                     host.Session = session;
                                     if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);
+                                    // 调用主事件
+                                    IResult result = (IResult)info.Method.Invoke(api, null);
+                                    return api.Render(result);
                                 }
-                                // 调用主事件
-                                IResult result = (IResult)info.Method.Invoke(api, null);
-                                return api.Render(result);
                             } else {
                                 ApiControllerBase api = (ApiControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
