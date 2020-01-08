@@ -203,27 +203,9 @@ namespace ModularCore.Middlewares {
                 var packages = xml["packages"];
                 foreach (var package in packages.GetNodesByTagName("package", false)) {
                     string packageName = package.Attr["name"];
-                    string packageDownload = package.Attr["download"];
-                    string packageInstall = package.Attr["install"];
+                    string packageInstall = package.Attr["version"];
                     string folderInstall = $"{folderPackage}{it.SplitChar}{packageName}{it.SplitChar}{packageInstall}";
-                    Console.WriteLine($"[*] 读取包版本 {packageName} 下载版本:{packageDownload} 安装版本:{packageInstall}");
-                    if (packageDownload != packageInstall) {
-                        // 进行包的解压
-                        Console.WriteLine($"[+] 包安装 {packageName} 版本:{packageDownload} ...");
-                        string fileDown = $"{folderDown}{it.SplitChar}{packageName}-{packageDownload}.zip";
-                        folderInstall = $"{folderPackage}{it.SplitChar}{packageName}{it.SplitChar}{packageDownload}";
-                        if (!System.IO.Directory.Exists(folderDown)) System.IO.Directory.CreateDirectory(folderDown);
-                        ZipFile.ExtractToDirectory(fileDown, folderInstall, true);
-                        // 进行包的安装
-                        string folderInstallRoot = $"{folderInstall}{it.SplitChar}wwwroot";
-                        if (System.IO.Directory.Exists(folderRoot)) {
-                            // 进行包内静态文件的复制
-                            CopyFolder(folderInstallRoot, folderRoot);
-                        }
-                        // 更新版本号
-                        package.Attr["install"] = packageDownload;
-                        isUpdate = true;
-                    }
+                    Console.WriteLine($"[*] 读取包版本 {packageName} 安装版本:{packageInstall}");
                     // 判断依赖有效性
                     string pathCfg = $"{folderInstall}{it.SplitChar}modular.json";
                     Console.WriteLine($"[*] 读取包配置文件 {pathCfg} ...");
@@ -310,7 +292,7 @@ namespace ModularCore.Middlewares {
                                     return api.Render(text);
                                 }
                             } else {
-                                ApiControllerBase api = (ApiControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
+                                ControllerBase api = (ControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
                                 if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);
@@ -333,7 +315,7 @@ namespace ModularCore.Middlewares {
                                     return api.Render(result);
                                 }
                             } else {
-                                ApiControllerBase api = (ApiControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
+                                ControllerBase api = (ControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
                                 if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);

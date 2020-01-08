@@ -21,7 +21,9 @@ namespace ModularCore {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
-                    dpz3.AspNetCore.Kestrel.DeployConfig($"{it.Config.WorkFolder}kestrel.cfg", webBuilder);
+                    string pathKestrel = $"{it.Config.WorkFolder}kestrel.cfg";
+                    Console.WriteLine($"[*] ”¶”√≈‰÷√ {pathKestrel} ...");
+                    dpz3.AspNetCore.Kestrel.DeployConfig(webBuilder, pathKestrel);
                     webBuilder.UseStartup<Startup>();
                 });
     }
