@@ -2,16 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>2.0.2001.4</Version>
+    <Version>2.1.2002.23</Version>
     <AssemblyName>mdrc</AssemblyName>
+    <Authors>d.p.z Software Studio</Authors>
+    <Product>模块化网站核心控制器</Product>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dpz3" Version="2.0.2001.42" />
+    <PackageReference Include="dpz3" Version="2.0.2001.45" />
     <PackageReference Include="dpz3.AspNetCore3" Version="2.0.2001.20" />
     <PackageReference Include="dpz3.db" Version="1.2.1912.8" />
-    <PackageReference Include="dpz3.Modular" Version="2.0.2001.15" />
+    <PackageReference Include="dpz3.Modular" Version="2.1.2002.26" />
     <PackageReference Include="dpz3.ssr.SessionClient" Version="1.0.1911.1" />
+    <PackageReference Include="dpz3.User" Version="1.0.1911.3" />
   </ItemGroup>
 
   <ItemGroup>

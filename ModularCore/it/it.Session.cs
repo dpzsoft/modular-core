@@ -76,6 +76,14 @@ public static partial class it {
             this.CreateNewSessionID();
             return this.SessionID;
         }
+
+        /// <summary>
+        /// 获取交互标识
+        /// </summary>
+        /// <returns></returns>
+        public string GetSessionId() {
+            return this.SessionID;
+        }
     }
 
 }

@@ -37,38 +37,38 @@ namespace ModularCore {
             // 使用自定义的模块化中间件
             app.UseModular();
 
-            // 开启静态文件支持并单独处理非缓存文件
-            dpz3.KeyValues<string> noneCache = new dpz3.KeyValues<string>();
-            noneCache["json"] = "text/plain";
-            noneCache["html"] = "text/html";
+            //// 开启静态文件支持并单独处理非缓存文件
+            //dpz3.KeyValues<string> noneCache = new dpz3.KeyValues<string>();
+            //noneCache["json"] = "text/plain";
+            //noneCache["html"] = "text/html";
 
-            // 设置header
-            dpz3.KeyValues<string> noneCacheHeaders = new dpz3.KeyValues<string>();
-            noneCacheHeaders["Pragma"] = "No-Cache";
-            noneCacheHeaders["Cache-Control"] = "No-Cache";
-            noneCacheHeaders["Expires"] = "0";
+            //// 设置header
+            //dpz3.KeyValues<string> noneCacheHeaders = new dpz3.KeyValues<string>();
+            //noneCacheHeaders["Pragma"] = "No-Cache";
+            //noneCacheHeaders["Cache-Control"] = "No-Cache";
+            //noneCacheHeaders["Expires"] = "0";
 
-            // 使用静态文件
-            app.UseStaticFiles(new StaticFileOptions() {
-                OnPrepareResponse = context => {
-                    // 判断扩展名
-                    string ext = System.IO.Path.GetExtension(context.Context.Request.Path).Substring(1).ToLower();
-                    foreach (var item in noneCache) {
-                        if (item.Key == ext) {
-                            // 设置内容类型
-                            context.Context.Response.ContentType = item.Value;
-                            foreach (var header in noneCacheHeaders) {
-                                if (context.Context.Response.Headers.ContainsKey(header.Key)) {
-                                    context.Context.Response.Headers[header.Key] = header.Value;
-                                } else {
-                                    context.Context.Response.Headers.Add(header.Key, header.Value);
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            });
+            //// 使用静态文件
+            //app.UseStaticFiles(new StaticFileOptions() {
+            //    OnPrepareResponse = context => {
+            //        // 判断扩展名
+            //        string ext = System.IO.Path.GetExtension(context.Context.Request.Path).Substring(1).ToLower();
+            //        foreach (var item in noneCache) {
+            //            if (item.Key == ext) {
+            //                // 设置内容类型
+            //                context.Context.Response.ContentType = item.Value;
+            //                foreach (var header in noneCacheHeaders) {
+            //                    if (context.Context.Response.Headers.ContainsKey(header.Key)) {
+            //                        context.Context.Response.Headers[header.Key] = header.Value;
+            //                    } else {
+            //                        context.Context.Response.Headers.Add(header.Key, header.Value);
+            //                    }
+            //                }
+            //                break;
+            //            }
+            //        }
+            //    }
+            //});
 
             // 启用路由
             app.UseRouting();
