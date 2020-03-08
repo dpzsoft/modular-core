@@ -25,6 +25,11 @@ public static partial class it {
     internal static string ExecPath { get; private set; }
 
     /// <summary>
+    /// 程序版本
+    /// </summary>
+    internal static string Version { get; private set; }
+
+    /// <summary>
     /// 当前IP地址
     /// </summary>
     internal static string IPAddress { get; private set; }
@@ -33,6 +38,9 @@ public static partial class it {
     /// 使用初始化
     /// </summary>
     internal static void Initialize() {
+
+        // 读取程序版本号
+        it.Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         // 设置目录分隔符
         char pathSplit = '/';
@@ -43,13 +51,13 @@ public static partial class it {
         string execpath = AppContext.BaseDirectory;
         if (!execpath.EndsWith(pathSplit)) execpath += pathSplit;
         it.ExecPath = execpath;
-        Console.WriteLine($"[+] ExecPath {it.ExecPath}");
+        // Console.WriteLine($"[+] ExecPath {it.ExecPath}");
 
         // 获取工作目录
         string workpath = System.IO.Directory.GetCurrentDirectory();
         if (!workpath.EndsWith(pathSplit)) workpath += pathSplit;
         it.WorkPath = workpath;
-        Console.WriteLine($"[+] WorkPath {it.WorkPath}");
+        // Console.WriteLine($"[+] WorkPath {it.WorkPath}");
 
         // 获取当前IP地址
         it.IPAddress = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()

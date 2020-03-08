@@ -11,6 +11,7 @@ using System.IO.Compression;
 using dpz3.db;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.IO;
+using System.Text;
 
 namespace ModularCore.Middlewares {
 
@@ -65,6 +66,36 @@ namespace ModularCore.Middlewares {
         /// </summary>
         public Connection Connection { get; set; }
 
+        /// <summary>
+        /// 宿主版本
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// 工作目录
+        /// </summary>
+        public string WorkFolder { get; set; }
+
+        /// <summary>
+        /// 存储目录
+        /// </summary>
+        public string StorageFolder { get; set; }
+
+        /// <summary>
+        /// 包名称
+        /// </summary>
+        public string PackageName { get; set; }
+
+        /// <summary>
+        /// 包版本
+        /// </summary>
+        public string PackageVersion { get; set; }
+
+        /// <summary>
+        /// 包工作目录
+        /// </summary>
+        public string PackageWorkFolder { get; set; }
+
         public void Dispose() {
             this.Context = null;
             this.Session = null;
@@ -81,14 +112,24 @@ namespace ModularCore.Middlewares {
         private const string Platform_Name = "core";
         private const int Platform_Version = 1;
 
-        private List<ModularMethodInfo> _post;
-        private List<ModularMethodInfo> _get;
+        public List<ModularMethodInfo> Posts { get; private set; }
+        public List<ModularMethodInfo> Gets { get; private set; }
         private dpz3.KeyValues<string> _mimes;
 
         /// <summary>
         /// 获取包名称
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// 获取包版本号
+        /// </summary>
+        public string Version { get; private set; }
+
+        /// <summary>
+        /// 获取工作目录
+        /// </summary>
+        public string WorkPath { get; private set; }
 
         /// <summary>
         /// 获取根目录
@@ -102,6 +143,12 @@ namespace ModularCore.Middlewares {
                 httpContext.Response.ContentType = "text/plain;charset=UTF-8";
                 // 建立宿主对象
                 using (ModularHost host = new ModularHost()) {
+                    host.Version = it.Version;
+                    host.WorkFolder = it.WorkPath;
+                    host.StorageFolder = $"{it.WorkPath}storage";
+                    host.PackageName = this.Name;
+                    host.PackageVersion = this.Version;
+                    host.PackageWorkFolder = this.WorkPath;
                     host.Context = httpContext;
                     if (!dpz3.Object.IsNull(it.Database.Entity)) host.Connection = new Connection(it.Database.Entity);
                     string returnType = info.Method.ReturnType.FullName;
@@ -212,7 +259,7 @@ namespace ModularCore.Middlewares {
             switch (request.Method) {
                 case "POST":
                     // 遍历所有注册接口
-                    foreach (var info in _post) {
+                    foreach (var info in Posts) {
                         if (path == info.Route) {
                             return ExecuteMethod(context, info);
                         }
@@ -220,7 +267,7 @@ namespace ModularCore.Middlewares {
                     break;
                 case "GET":
                     // 遍历所有注册接口
-                    foreach (var info in _get) {
+                    foreach (var info in Gets) {
                         if (path == info.Route) {
                             return ExecuteMethod(context, info);
                         }
@@ -294,18 +341,18 @@ namespace ModularCore.Middlewares {
                                                 case dpz3.Modular.ModularTypes.Post:
                                                     // 添加一条POST接口信息
                                                     Console.WriteLine($"[@] POST /{this.Name}{routeNew} ...");
-                                                    _post.Add(methodInfo);
+                                                    Posts.Add(methodInfo);
                                                     break;
                                                 case dpz3.Modular.ModularTypes.Get:
                                                     // 添加一条GET接口信息
                                                     Console.WriteLine($"[@] GET /{this.Name}{routeNew} ...");
-                                                    _get.Add(methodInfo);
+                                                    Gets.Add(methodInfo);
                                                     // 处理特殊的首页
                                                     if (routeNew.EndsWith("/index")) {
                                                         routeNew = routeNew.Substring(0, routeNew.Length - 5);
                                                         // 添加一条GET接口信息
                                                         Console.WriteLine($"[@] GET /{this.Name}{routeNew} ...");
-                                                        _get.Add(new ModularMethodInfo() {
+                                                        Gets.Add(new ModularMethodInfo() {
                                                             Method = method,
                                                             Assembly = assembly,
                                                             Type = tp,
@@ -329,16 +376,18 @@ namespace ModularCore.Middlewares {
             }
         }
 
-        public ModularPackage(dpz3.KeyValues<string> mimes, string folderPackage, string packageName, string packageInstall) {
+        public ModularPackage(dpz3.KeyValues<string> mimes, string folderPackage, string packageName, string packageVersion) {
             // 初始化接口列表信息
-            _post = new List<ModularMethodInfo>();
-            _get = new List<ModularMethodInfo>();
+            Posts = new List<ModularMethodInfo>();
+            Gets = new List<ModularMethodInfo>();
             _mimes = mimes;
             // 读取包信息
             this.Name = packageName;
-            string folderInstall = $"{folderPackage}{it.SplitChar}{packageName}{it.SplitChar}{packageInstall}";
+            this.Version = packageVersion;
+            string folderInstall = $"{folderPackage}{it.SplitChar}{packageName}{it.SplitChar}{packageVersion}";
+            this.WorkPath = folderInstall;
             this.RootPath = $"{folderInstall}{it.SplitChar}wwwroot";
-            Console.WriteLine($"[*] 读取包版本 {packageName} 安装版本:{packageInstall}");
+            Console.WriteLine($"[*] 读取包版本 {packageName} 安装版本:{packageVersion}");
             // 判断依赖有效性
             string pathCfg = $"{folderInstall}{it.SplitChar}modular.json";
             // Console.WriteLine($"    读取包配置文件 {pathCfg} ...");
@@ -492,6 +541,37 @@ namespace ModularCore.Middlewares {
             //RegLibrary(path);
         }
 
+        #region [=====特殊路径处理=====]
+
+        public Task ReturnMap(HttpContext context) {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<html>");
+            sb.Append("<head>");
+            sb.Append("<meta charset=\"utf-8\" />");
+            sb.Append("<title>模块地图</title>");
+            sb.Append("</head>");
+            sb.Append("<body>");
+            sb.Append("<div>");
+            sb.Append("<dl>");
+            // 遍历所有包
+            foreach (var package in _packages) {
+                sb.AppendFormat("<dt>包 {0}</dt>", package.Name);
+                foreach (var info in package.Gets) {
+                    sb.AppendFormat("<dd>GET <a href=\"/{0}{1}\" target=\"_blank\">/{0}{1}<a></dd>", package.Name, info.Route);
+                }
+                foreach (var info in package.Posts) {
+                    sb.AppendFormat("<dd>POST /{0}{1}</dd>", package.Name, info.Route);
+                }
+            }
+            sb.Append("</dl>");
+            sb.Append("</div>");
+            sb.Append("</body>");
+            sb.Append("</html>");
+            return context.Response.WriteAsync(sb.ToString());
+        }
+
+        #endregion
+
         public Task Invoke(HttpContext httpContext) {
             // 获取申请器
             var request = httpContext.Request;
@@ -504,7 +584,15 @@ namespace ModularCore.Middlewares {
                     return package.Invoke(httpContext, path.Substring(package.Name.Length + 1));
                 }
             }
-            return _next(httpContext);
+            // 处理特殊路径
+            var siteInfo = it.Config.Site.GetInfo("default");
+            if (siteInfo.IsDevelop) {
+                if (path == "/map") return ReturnMap(httpContext);
+            }
+            // 未找到接口，返回404
+            httpContext.Response.StatusCode = 404;
+            return httpContext.Response.StartAsync();
+            // return _next(httpContext);
         }
 
     }
