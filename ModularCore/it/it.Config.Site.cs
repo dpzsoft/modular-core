@@ -24,6 +24,7 @@ public static partial class it {
         public static class Site {
 
             private static dpz3.File.ConfFile _cfg;
+            public static SiteInfo Default;
 
             public static SiteInfo GetInfo(string domain) {
                 var group = _cfg[domain];
@@ -54,6 +55,7 @@ public static partial class it {
                 }
 
                 _cfg = new dpz3.File.ConfFile(path);
+                Default = GetInfo("default");
 
             }
 

@@ -44,7 +44,7 @@ public static partial class it {
                     //if (!base.SetSessionID(sid)) throw new Exception("交互信息无效或已过期");
                 }
             }
-            Console.WriteLine($"[*] 创建一个全新的交互管理器 sid:{this.SessionID} 有效性:{this.Enable}");
+            ModularCore.Program.Println($"[*] 创建一个全新的交互管理器 sid:{this.SessionID} 有效性:{this.Enable}");
         }
 
         /// <summary>

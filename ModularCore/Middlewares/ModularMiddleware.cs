@@ -96,6 +96,26 @@ namespace ModularCore.Middlewares {
         /// </summary>
         public string PackageWorkFolder { get; set; }
 
+        /// <summary>
+        /// 调试输出
+        /// </summary>
+        /// <param name="content"></param>
+        public void Debug(string content) {
+            Program.Print(content);
+        }
+
+        /// <summary>
+        /// 调试输出
+        /// </summary>
+        /// <param name="content"></param>
+        public void DebugLine(string content = null) {
+            if (content.IsNoneOrNull()) {
+                Program.Println();
+            } else {
+                Program.Println(content);
+            }
+        }
+
         public void Dispose() {
             this.Context = null;
             this.Session = null;
@@ -169,13 +189,13 @@ namespace ModularCore.Middlewares {
                                 SessionControllerBase api = (SessionControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
-                                Console.WriteLine($"[*] 当前交互标识 {api.SessionID}");
+                                Program.Println($"[*] 当前交互标识 {api.SessionID}");
                                 using (var session = new it.Session(api.SessionID)) {
                                     // 自动申请新的交互标识
                                     if (!session.Enable) {
                                         session.CreateNewSessionID();
                                         api.SessionID = session.SessionID;
-                                        Console.WriteLine($"[+] 生成了一个全新的交互标识 {api.SessionID}");
+                                        Program.Println($"[+] 生成了一个全新的交互标识 {api.SessionID}");
                                     }
                                     host.Session = session;
                                     if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);
@@ -214,13 +234,13 @@ namespace ModularCore.Middlewares {
                                 SessionControllerBase api = (SessionControllerBase)info.Assembly.CreateInstance(info.Type.FullName); ;
                                 // 执行初始化调用
                                 string res = api.Initialize(host);
-                                Console.WriteLine($"[*] 当前交互标识 {api.SessionID}");
+                                Program.Println($"[*] 当前交互标识 {api.SessionID}");
                                 using (var session = new it.Session(api.SessionID)) {
                                     // 自动申请新的交互标识
                                     if (!session.Enable) {
                                         session.CreateNewSessionID();
                                         api.SessionID = session.SessionID;
-                                        Console.WriteLine($"[+] 生成了一个全新的交互标识 {api.SessionID}");
+                                        Program.Println($"[+] 生成了一个全新的交互标识 {api.SessionID}");
                                     }
                                     host.Session = session;
                                     if (!res.IsNoneOrNull()) return httpContext.Response.WriteAsync(res);
@@ -254,7 +274,7 @@ namespace ModularCore.Middlewares {
         public Task Invoke(HttpContext context, string path) {
             // 获取申请器
             var request = context.Request;
-            // Console.WriteLine($"[*] 包 {this.Name} 接受 {request.Method} {path} ...");
+            // Program.Println($"[*] 包 {this.Name} 接受 {request.Method} {path} ...");
             // 执行事件
             switch (request.Method) {
                 case "POST":
@@ -274,12 +294,12 @@ namespace ModularCore.Middlewares {
                     }
                     // 判断是否存在静态文件
                     string filePath = $"{this.RootPath}{path.Replace('/', it.SplitChar)}";
-                    // Console.WriteLine($"[*] 查找静态文件 {filePath} ...");
+                    Program.Println($"[*] 查找静态文件 {filePath} ...");
                     if (System.IO.File.Exists(filePath)) {
-                        // Console.WriteLine($"[*] 输出文件 {filePath} ...");
+                        Program.Println($"[*] 输出文件 {filePath} ...");
                         string ext = System.IO.Path.GetExtension(filePath).ToLower();
                         if (_mimes.ContainsKey(ext)) {
-                            // Console.WriteLine($"[*] 输出mime {_mimes[ext]} ...");
+                            // Program.Println($"[*] 输出mime {_mimes[ext]} ...");
                             context.Response.ContentType = _mimes[ext];
                         }
                         return context.Response.SendFileAsync(filePath);
@@ -292,7 +312,7 @@ namespace ModularCore.Middlewares {
         // 注册类库
         private void RegLibrary(string path) {
 
-            // Console.WriteLine($"    正在注册类库 {path} ...");
+            Program.Println($"    正在注册类库 {path} ...");
 
             // 加载类库
             Assembly assembly = Assembly.LoadFile(path);
@@ -340,18 +360,18 @@ namespace ModularCore.Middlewares {
                                             switch (methodModular.ModularType) {
                                                 case dpz3.Modular.ModularTypes.Post:
                                                     // 添加一条POST接口信息
-                                                    Console.WriteLine($"[@] POST /{this.Name}{routeNew} ...");
+                                                    Program.Println($"[@] POST /{this.Name}{routeNew} ...");
                                                     Posts.Add(methodInfo);
                                                     break;
                                                 case dpz3.Modular.ModularTypes.Get:
                                                     // 添加一条GET接口信息
-                                                    Console.WriteLine($"[@] GET /{this.Name}{routeNew} ...");
+                                                    Program.Println($"[@] GET /{this.Name}{routeNew} ...");
                                                     Gets.Add(methodInfo);
                                                     // 处理特殊的首页
                                                     if (routeNew.EndsWith("/index")) {
                                                         routeNew = routeNew.Substring(0, routeNew.Length - 5);
                                                         // 添加一条GET接口信息
-                                                        Console.WriteLine($"[@] GET /{this.Name}{routeNew} ...");
+                                                        Program.Println($"[@] GET /{this.Name}{routeNew} ...");
                                                         Gets.Add(new ModularMethodInfo() {
                                                             Method = method,
                                                             Assembly = assembly,
@@ -387,10 +407,10 @@ namespace ModularCore.Middlewares {
             string folderInstall = $"{folderPackage}{it.SplitChar}{packageName}{it.SplitChar}{packageVersion}";
             this.WorkPath = folderInstall;
             this.RootPath = $"{folderInstall}{it.SplitChar}wwwroot";
-            Console.WriteLine($"[*] 读取包版本 {packageName} 安装版本:{packageVersion}");
+            Program.Println($"[*] 读取包版本 {packageName} 安装版本:{packageVersion}");
             // 判断依赖有效性
             string pathCfg = $"{folderInstall}{it.SplitChar}modular.json";
-            // Console.WriteLine($"    读取包配置文件 {pathCfg} ...");
+            Program.Println($"    读取包配置文件 {pathCfg} ...");
             bool isEnable = false;
             int plmVersion = 0;
             if (System.IO.File.Exists(pathCfg)) {
@@ -400,15 +420,15 @@ namespace ModularCore.Middlewares {
                     string jsonVersion = json.Str["version"];
                     string jsonDescription = json.Str["description"];
                     var jsonDepends = json.Arr["depend"];
-                    // Console.WriteLine($"    获取包 {packageName} 信息");
-                    Console.WriteLine($"    名称:{jsonName}");
-                    Console.WriteLine($"    版本:{jsonVersion}");
-                    Console.WriteLine($"    描述:{jsonDescription}");
+                    // Program.Println($"    获取包 {packageName} 信息");
+                    Program.Println($"    名称:{jsonName}");
+                    Program.Println($"    版本:{jsonVersion}");
+                    Program.Println($"    描述:{jsonDescription}");
                     for (int i = 0; i < jsonDepends.Count; i++) {
                         var depend = jsonDepends.Obj[i];
                         string dependPlatform = depend.Str["platform"];
                         int dependVersion = depend.Int["version"];
-                        Console.WriteLine($"    依赖 => {dependPlatform}:{dependVersion}");
+                        Program.Println($"    依赖 => {dependPlatform}:{dependVersion}");
                         if (dependPlatform == Platform_Name) {
                             plmVersion = dependVersion;
                         }
@@ -416,9 +436,9 @@ namespace ModularCore.Middlewares {
                 }
             }
             if (plmVersion < Platform_Version) {
-                Console.WriteLine($"[-] 包 {packageName} 依赖关系不符合: 此包适用于旧版本主程序，请更新包或联系开发者进行更新");
+                Program.Println($"[-] 包 {packageName} 依赖关系不符合: 此包适用于旧版本主程序，请更新包或联系开发者进行更新");
             } else if (plmVersion < Platform_Version) {
-                Console.WriteLine($"[-] 包 {packageName} 依赖关系不符合: 此包适用于更新版本的主程序，请升级主程序");
+                Program.Println($"[-] 包 {packageName} 依赖关系不符合: 此包适用于更新版本的主程序，请升级主程序");
             } else {
                 isEnable = true;
             }
@@ -426,7 +446,7 @@ namespace ModularCore.Middlewares {
                 // 注册控制器
                 string pathDll = $"{folderInstall}{it.SplitChar}controller.dll";
                 if (System.IO.File.Exists(pathDll)) {
-                    Console.WriteLine($"    包 {packageName} 控制器激活中 ...");
+                    Program.Println($"    包 {packageName} 控制器激活中 ...");
                     RegLibrary(pathDll);
                 }
             }
@@ -448,7 +468,7 @@ namespace ModularCore.Middlewares {
             foreach (var dir in dirs) {
                 string name = System.IO.Path.GetFileName(dir);
                 string pathNew = $"{pathTarget}{it.SplitChar}{name}";
-                Console.WriteLine($"[+] 创建目录 {pathNew} ...");
+                Program.Println($"[+] 创建目录 {pathNew} ...");
                 if (!System.IO.Directory.Exists(pathNew)) System.IO.Directory.CreateDirectory(pathNew);
                 CopyFolder(dir, pathNew);
             }
@@ -458,7 +478,7 @@ namespace ModularCore.Middlewares {
             foreach (var file in files) {
                 string name = System.IO.Path.GetFileName(file);
                 string pathNew = $"{pathTarget}{it.SplitChar}{name}";
-                Console.WriteLine($"[+] 拷贝文件 {pathNew} ...");
+                Program.Println($"[+] 拷贝文件 {pathNew} ...");
                 System.IO.File.Copy(file, $"{pathTarget}{it.SplitChar}{name}", true);
             }
         }
@@ -466,7 +486,7 @@ namespace ModularCore.Middlewares {
         // 安装所有的包
         private void InstallPacks() {
 
-            Console.WriteLine("[*] 初始化包管理 ...");
+            Program.Println("[*] 初始化包管理 ...");
 
             string folderRoot = $"{it.ExecPath}wwwroot";
             string folderDown = $"{it.ExecPath}downloads";
@@ -478,7 +498,7 @@ namespace ModularCore.Middlewares {
             // 判断并创建配置文件
             string fileXml = $"{folderPackage}{it.SplitChar}packages.xml";
             if (!System.IO.File.Exists(fileXml)) {
-                Console.WriteLine("[*] 正在创建包管理文件 ...");
+                Program.Println("[*] 正在创建包管理文件 ...");
                 using (var doc = new dpz3.Xml.XmlDocument()) {
                     var xml = new dpz3.Xml.XmlNode("xml");
                     doc.Nodes.Add(xml);
@@ -577,7 +597,7 @@ namespace ModularCore.Middlewares {
             var request = httpContext.Request;
             // 读取访问地址
             string path = request.Path.ToString().ToLower();
-            Console.WriteLine($"[*] {request.Method} {path}");
+            Program.Println($"[*] {request.Method} {path}");
             // 遍历所有包
             foreach (var package in _packages) {
                 if (path.StartsWith($"/{package.Name}/")) {
