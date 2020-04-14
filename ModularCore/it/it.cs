@@ -51,13 +51,13 @@ public static partial class it {
         string execpath = AppContext.BaseDirectory;
         if (!execpath.EndsWith(pathSplit)) execpath += pathSplit;
         it.ExecPath = execpath;
-        // Console.WriteLine($"[+] ExecPath {it.ExecPath}");
+        Console.WriteLine($"[*] Program.ExecPath {it.ExecPath}");
 
         // 获取工作目录
         string workpath = System.IO.Directory.GetCurrentDirectory();
         if (!workpath.EndsWith(pathSplit)) workpath += pathSplit;
         it.WorkPath = workpath;
-        // Console.WriteLine($"[+] WorkPath {it.WorkPath}");
+        Console.WriteLine($"[*] Program.WorkPath {it.WorkPath}");
 
         // 获取当前IP地址
         it.IPAddress = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
@@ -70,7 +70,7 @@ public static partial class it {
         string cfgPath = $"{it.ExecPath}conf";
         if (!System.IO.Directory.Exists(cfgPath)) System.IO.Directory.CreateDirectory(cfgPath);
         it.Config.Initialize(cfgPath);
-        Console.WriteLine($"[+] Config.WorkFolder {it.Config.WorkFolder}");
+        Console.WriteLine($"[*] Config.WorkFolder {it.Config.WorkFolder}");
 
         // 初始化数据库设置
         it.Database.Initialize();

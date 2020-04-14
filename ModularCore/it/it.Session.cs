@@ -72,7 +72,8 @@ public static partial class it {
         /// </summary>
         /// <returns></returns>
         public string CreateSessionId() {
-            Console.WriteLine($"[+] 创建一个全新的交互标识 ...");
+            //Console.WriteLine($"[+] 创建一个全新的交互标识 ...");
+            ModularCore.Program.Println($"[+] 创建一个全新的交互标识 ...");
             this.CreateNewSessionID();
             return this.SessionID;
         }
